@@ -1,0 +1,12 @@
+title: Individual VPA for DaemonSet
+kep-number: xxxx
+authors:
+  - "@moricho"
+owning-sig: sig-autoscaling
+reviewers:
+  - "@xxxxx"
+approvers:
+  - "@xxxxx"
+creation-date: 2021-03-12
+last-updated: TBD
+status: provisional
