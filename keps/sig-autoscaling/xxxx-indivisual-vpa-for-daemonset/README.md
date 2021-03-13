@@ -148,32 +148,29 @@ Items marked with (R) are required _prior to targeting to a milestone / release_
 
 ## Summary
 
-The Vertical Pod Autoscaler supports scaling of targets based on the resource usage of the pods in the target. Currently, the resource usage of DaemonSet is calculated as the average of the individual pod usage values of the DaemonSet. This is unsuitable for workloads where the usage of the pods on the each nodes are not strongly correlated. This KEP suggests that when scaling based on resource usage, the VPA also provide an option to consider the usages of individual pods to make scaling decisions and scale pods individually.
+The Vertical Pod Autoscaler supports scaling of targets based on the resource usage of the pods in the target. Currently, the resource usage of DaemonSet is calculated as the average of the individual pod usage values of the DaemonSet. This is unsuitable for workloads where the usage of the pods on each node is not strongly correlated. This KEP suggests that when scaling based on resource usage, the VPA also provides an option to consider the usages of individual pods to make scaling decisions and scale pods individually.
 
 ## Motivation
 
-<!--
-This section is for explicitly listing the motivation, goals, and non-goals of
-this KEP.  Describe why the change is important and the benefits to users. The
-motivation section can optionally provide links to [experience reports] to
-demonstrate the interest in a KEP within the wider Kubernetes community.
+The major motivation is two-fold:
 
-[experience reports]: https://github.com/golang/go/wiki/ExperienceReports
--->
+- Optimize pod resources in DaemonSet based on the usage of each pod which varies by node
+- Reduce unnecessary costs for resources
+
+Unlike pods in Deployment that are load balanced by Service, pods in DaemonSet tend to have different amounts of usage for each node. We usually set whole request resources larger corresponding to a few pods with higher usage, so many of the other pods have a lot of surplus resources. As a result, we have to pay more than we should.
+
+Currently, however, VPA makes decisions about scaling based on the average usage of the pods in the DaemonSet and scales up/down all pods to the same request amount.
+
+In response to that, we are planning to add a feature to VPA that can collect usage of pods in DaemonSet, calculate recommended values for each of them, and scale them individually based on the values.
 
 ### Goals
 
-<!--
-List the specific goals of the KEP. What is it trying to achieve? How will we
-know that this has succeeded?
--->
+- Make VPA scale pods in DaemonSet individually based on the resource usage of each pod
 
 ### Non-Goals
 
-<!--
-What is out of scope for this KEP? Listing non-goals helps to focus discussion
-and make progress.
--->
+- Support individual VPA for other resources except for DaemonSet
+- Make VPA scale based on individual container resource usage
 
 ## Proposal
 
